@@ -1,6 +1,6 @@
 /*
  * Code by Matthew Zuberbuhler & Sergio Gutierrez 
- */*
+ */
 #include <stdio.h>
 
 int main(void) {
