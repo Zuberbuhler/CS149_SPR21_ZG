@@ -5,21 +5,20 @@
 
 int main(void) {
 
-   int dividend;
-   int divisor;
-   int res;
-   scanf("%d %d", &dividend, &divisor);
+   int userNum; // dividend
+   int x; // divisor
+   scanf("%d %d", &userNum, &x);
 
-   for (int i = 0; i < 2; i++) 
+   for (int i = 0; i < 2; i++) // divide the dividend three times
    {
-      dividend = dividend / divisor;
-      printf("%d ", dividend);
+      userNum = userNum / x;
+      printf("%d ", userNum);
    }
-    printf("%d", dividend / divisor);
+    printf("%d", userNum / x);
    printf("\n");
    
    return 0;
-   
-   
 }
+
+
 
