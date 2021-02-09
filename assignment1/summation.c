@@ -7,7 +7,7 @@ run using the following command:
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+//#include <string.h>
 #include <math.h> //use pow() if floats have fraction values Zuberbuhler, Matthew
 
 
