@@ -115,12 +115,13 @@ int main( int argc, char **argv)  {
             return 1; //file failed to open.
 
         }
-        size = findSize( fp);
+        size = findSize(fp);
         if(size == 0)
         {
             printf("No numbers in file\n");
             return 0;
         }
+
 
         summationResult = summation(fp, size, exponent);
 
