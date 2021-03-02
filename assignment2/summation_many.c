@@ -12,110 +12,104 @@
 #include <sys/wait.h>
 //#include <errno.h>
 
+// for testing the exponent provided by user
+// returns 1 is exponent argument is not a number; has no letters/special symbols
 int containsLetter(char * strToDouble) {
+    int periodCount = 0;
     for(int i = 0; i < strlen(strToDouble); i++){
-        if((strToDouble[i] < 48 //not numbers
-        || strToDouble[i] > 57) //not numbers
-        && strToDouble[i] != 46) //the period '.'
+        if((strToDouble[i] < 48 // not numbers
+        || strToDouble[i] > 57) // not numbers
+        && strToDouble[i] != 46 // the period '.'
+        && periodCount < 2)     // at most 1 '.'
         {
-            return 1; //it does contain a letter
+            return 1; //contains a letter
+        }
+        if(strToDouble[i] == 46)
+        {
+            periodCount++;
         }
     }
-    return 0; //if only contains numbers
+    return 0; //only contains numbers
 }
 
+// argc holds amount of arguments provided by user + 1
+// argv is an array of strings that holds the arguments
 int main(int argc, char **argv) {
+    // prints all the arguments provided by user + 1
+    /*
     for(int i = 0; i < argc; i++)
     {
         printf("arg[%i] = %s\n", i, argv[i]);
     }
+    */
+
+    // a buffer for the strtod function used on exponent argument
     char *tmpPtr;
 
-    if(argc < 3)
+
+    if(argc < 3) // too little arguments
     {
-        return 1; //too little arguments
+        printf("Provide at least one filename at one exponent.\n");
+        return 0;
     }
-    else
-    {
-        //we need to see if all of the files names open a file:
-        FILE * fp;
-        for(int i = 1; i < argc - 1; i++)
-        {
+    else {
+        // Check if all filenames open a file successfully:
+        FILE *fp;
+        for (int i = 1; i < argc - 1; i++) {
             fp = fopen(argv[i], "r");
-            if(!fp)
-            {
+            if (!fp) {
                 fclose(fp);
                 printf("range: cannot open file\n");
-                return 1; //file failed to open.
+                return 1; // file failed to open.
 
             }
-            fclose(fp); //else keep checking until all filenames are tested
+            fclose(fp); // else keep checking until all filenames are tested
         }
-        //we need to see if a number has been provided as the last arg:
-        if (containsLetter(argv[argc - 1]) == 1)
-        {
+
+        // Check is last argument is a number for exponent
+        if (containsLetter(argv[argc - 1]) == 1) {
             printf("Power argument is not a number!\n");
             return 1;
         }
-        double exponent = strtod(argv[argc-1], &tmpPtr);
+        // We have checked all cases for error, now time to perform summation_many
 
-        //at this point we can start forking process
-        //we need to fork main process 1 time per filename arg
-        //that will give us one process per filename
-        int id1 = 0, id2 = 0, mpid = getpid();
-        printf("main process pid: %i\n", getpid());
-        if(argc == 3)
-        {
-            printf("There are only 3 arguments!\n");
-            //do a normal summation with one process
-            fp = fopen(argv[(int)(getpid() - mpid + 1)], "r");
-            printf("opening %s\n", argv[(int)(getpid() - mpid + 1)]);
-            double tmp = 0, result = 0;
-            for(int i = 0; fscanf(fp, "%lf", &tmp) != EOF; i++)
-            {
-                if(exponent == 1) {
-                    result += tmp;
-                }
-                else
-                {
-                    result += pow(tmp, exponent);
-                }
-            }
-            printf("Final Result: %0.2lf\n", result);
+        int id1 = 0, fd[2], numOfChildren = 0;
+        double exponent = strtod(argv[argc - 1], &tmpPtr);
+        double tmp = 0, result = 0;
+        // assign file descriptors with pipe
+        if (pipe(fd) == -1) {
+            printf("An error occurred opening the pipe\n");
+            return 1;
         }
-        else
+
+        // we are only making children of main process
+        // NOT children of children, etc.
+        //1 filename = argc = 3
+        //to make 1 child:  argc - 2 = 1 thus while condition
+        while (numOfChildren < argc - 2) // only main process performs loop
         {
-            int fd[2];
-            if(pipe(fd) == -1)
-            {
-                printf("An error occurred opening the pipe\n");
-                return 1;
-            }
-            int numOfProc = 1;
             id1 = fork();
-
-            numOfProc++;
-            if(id1 == -1)
-            {
-                printf("fork failed!\n");
+            if (id1 == -1) {
+                printf("Fork failed");
                 return 1;
             }
-            while (numOfProc < argc - 2 && id1 != 0)
+
+            numOfChildren++; //use this is map to filename arguments
+
+            if (id1 == 0) // all children leave loop after created
             {
-                id2 = fork();
-                if (id2 == -1)
-                {
-                    printf("Fork failed");
-                    return 1;
-                }
-                numOfProc++;
-                if(id2 == 0){
-                    break;
-                }
+                break;
             }
-            fp = fopen(argv[(int)(getpid() - mpid + 1)], "r");
-            printf("opening %s\n", argv[(int)(getpid() - mpid + 1)]);
-            double tmp = 0, result = 0;
+        }
+
+        // all process open their own file: mapped with (numOfChildren)
+        if (id1 == 0)
+        {
+            // Each child process reads the numbers in their file
+            // and creates partial summation
+            // stored in result
+            fp = fopen(argv[numOfChildren], "r");
+
             for(int i = 0; fscanf(fp, "%lf", &tmp) != EOF; i++)
             {
                 if(exponent == 1) {
@@ -126,44 +120,46 @@ int main(int argc, char **argv) {
                     result += pow(tmp, exponent);
                 }
             }
+
             //printf("**result of pid[%i] and ppid[%i]: %0.2lf\n", getpid(), getppid(), result);
-
-            if(getpid() == mpid)
-            {
-                double readTmp = 0;
-                for (int i = 0; i < numOfProc - 1; i++)
-                //numOfProc - 1 is number of child processes b/c we use main process to read 1 of the files
-                {
-                    close(fd[1]);
-                    printf("Waiting for a child process to end. waitCode: %i\n", wait(NULL));
-                    read(fd[0], &readTmp, sizeof(double));
-                    //print the number read from pipe and the number of items read
-                    printf("readTmp#%i: %0.2lf\n", i+ 1, readTmp);
-                    close(fd[0]);
-                    result += readTmp;
-                }
-                printf("Final Result = %0.2lf\n", result);
-            }
-            else
-            {
-                close(fd[0]); // we are not reading from child;
-                write(fd[1], &result, sizeof(double));
-                close(fd[1]);
-            }
-
-
-//        if(getpid() == mpid) {
-//            while (wait(NULL) != -1 || errno != ECHILD) {
-//                printf("Waiting for a child to finish!\n");
-//            }
-//        }
         }
+        //printf("opening %s\n", argv[(int)(getpid() - mpid + 1)]);
 
-        printf("hello from pid: %i, ppid: %i\n",
-               getpid(), getppid());
+        // main process reads from pipe after waiting for each child
+        if(id1 != 0)
+        {
+            double readTmp = 0;
+            close(fd[1]); //main process doesn't write
 
+            // numOfProc - 1 is number of child processes
+            // b/c we use main process to read 1 of the files
+            //printf("result before partial sums: %0.2lf\n", result);
+            for (int i = 0; i < numOfChildren; i++)
+            {
+                wait(NULL);
 
+                read(fd[0], &readTmp, sizeof(double)); //read in from pipe
 
+                // print the number read from pipe and the number of items read
+                //printf("Result(%0.2lf) + readTmp(%0.2lf): ", result, readTmp);
+                result += readTmp;
+                //printf("%0.2lf\n", result);
+            }
+
+            close(fd[0]);
+
+            printf("%0.2lf\n", result);
+        }
+        else // child processes write to pipe and return when finished
+        {
+            //printf("process %i, writing %0.2lf\n", getpid(), result);
+            close(fd[0]); // we are not reading from child;
+
+            while(write(fd[1], &result, sizeof(double)) < 0); // each child writes their partial sum to pipe
+            
+            close(fd[1]);
+            return 0;
+        }
         return 0;
     }
 }
