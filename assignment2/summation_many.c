@@ -1,4 +1,9 @@
-
+/* 
+    run by type the following in terminal:
+    1.      gcc summation_many.c -o main
+    2.      ./main numbers1.txt numbers2.txt 1  
+    //test with multiple files and no files and empty files
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
