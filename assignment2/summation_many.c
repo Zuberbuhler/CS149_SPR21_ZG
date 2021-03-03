@@ -1,3 +1,6 @@
+/*
+ * Code by Matthew Zuberbuhler & Sergio Gutierrez 
+ */
 /* 
     run by type the following in terminal:
     1.      gcc summation_many.c -o main
@@ -13,7 +16,7 @@
 //#include <errno.h>
 
 // for testing the exponent provided by user
-// returns 1 is exponent argument is not a number; has no letters/special symbols
+// returns 1 if exponent argument is not a number; has no letters/special symbols
 int containsLetter(char * strToDouble) {
     int periodCount = 0;
     for(int i = 0; i < strlen(strToDouble); i++){
@@ -66,7 +69,7 @@ int main(int argc, char **argv) {
             fclose(fp); // else keep checking until all filenames are tested
         }
 
-        // Check is last argument is a number for exponent
+        // Check if last argument is a number for exponent
         if (containsLetter(argv[argc - 1]) == 1) {
             printf("Power argument is not a number!\n");
             return 1;
@@ -102,7 +105,7 @@ int main(int argc, char **argv) {
             }
         }
 
-        // all process open their own file: mapped with (numOfChildren)
+        // all child process open their own file: mapped with (numOfChildren)
         if (id1 == 0)
         {
             // Each child process reads the numbers in their file
