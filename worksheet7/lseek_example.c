@@ -36,7 +36,6 @@ void func(char arr[], int n)
             // nth byte)
         else
         {
-            count = (n);
             lseek(f_read, count, SEEK_CUR);
             write(f_write, arr, 1);
         }
