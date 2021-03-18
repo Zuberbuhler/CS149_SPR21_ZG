@@ -7,6 +7,31 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
+// FUNCTIONS BEGIN//
+int getNumOfDigits(int x) 
+{
+    int tmp = x, numOfDigits = 0;
+    while (tmp > 0) 
+    {
+        numOfDigits++;
+        tmp /= 10;
+    }
+
+    return numOfDigits;
+}
+
+void pidToStr(int pid, int numOfDigits, char *result) 
+{
+    int tmp = pid;
+
+    for (int i = numOfDigits - 1; i > -1; i--) 
+    {
+        result[i] = tmp % 10 + '0';
+        tmp /= 10;
+    }
+}
+// FUNCTIONS END//
+
 int main(int argc, char * argv[])
 {
     FILE * fp;
@@ -75,6 +100,7 @@ int main(int argc, char * argv[])
                     return 1;
                 }       
             }
+
             j=0; ctr=0; //ctr stores the amount of words in the 2d array!
 
             for(i=0; i<= (strlen(line)); i++)
@@ -103,20 +129,10 @@ int main(int argc, char * argv[])
 
             char newString[maxNumOfWords][maxStrLen]; 
 
-            // //get the correct line for the child
-            // for(int i = 0; i < numOfChildren; i++) 
-            // {
-            //     if((read = getline(&line, &len, fp)) == -1) 
-            //     {
-            //         printf("read failed with child: %i\n", numOfChildren);
-            //         return 1;
-            //     }       
-            // }
-
             printf("---------------------------------------\n");
-            printf("\n\n Split string by space into words :\n");
-            printf("Retrieved line of length %zu:\n", read);
-            printf("%s\n", line);
+            // printf("\n\n Split string by space into words :\n");
+            // printf("Retrieved line of length %zu:\n", read);
+            // printf("%s\n", line);
 
 
             j=0; ctr=0; //ctr stores the amount of words in the 2d array!
@@ -137,13 +153,13 @@ int main(int argc, char * argv[])
                 }
             }
 
-            printf("\n Strings or words after split by space are :\n");
-            for(i=0;i < ctr;i++) 
-            {
-                printf(" %s\n", newString[i]);
-            }
+            // printf("\n Strings or words after split by space are :\n");
+            // for(i=0;i < ctr;i++) 
+            // {
+            //     printf(" %s\n", newString[i]);
+            // }
 
-            printf("maxNumOfWords: %d\n", maxNumOfWords);
+            // printf("maxNumOfWords: %d\n", maxNumOfWords);
 
             char* vector[maxNumOfWords + 1];
             for(int i = 0; i < maxNumOfWords; i++) 
@@ -159,11 +175,35 @@ int main(int argc, char * argv[])
                 free(line);
             }
 
+            /* Create out and err filenames */
+            int pid = getpid();
+
+            int numOfDigits = getNumOfDigits(pid);
+            char * result2 = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+            char * result1 = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+            pidToStr(pid, numOfDigits, result1);
+            pidToStr(pid, numOfDigits, result2);
+            result1[numOfDigits] = '.';
+            result1[numOfDigits + 1] = 'o';
+            result1[numOfDigits + 2] = 'u';
+            result1[numOfDigits + 3] = 't';
+            result1[numOfDigits + 4] = '\0';
+
+            result2[numOfDigits] = '.';
+            result2[numOfDigits + 1] = 'e';
+            result2[numOfDigits + 2] = 'r';
+            result2[numOfDigits + 3] = 'r';
+            result2[numOfDigits + 4] = '\0';
+
+            printf("String version of PID: _%s_\n", result1);
+            printf("String version of PID: _%s_\n", result2);
+
+            /* Redirect the output! */
+            // int outFile = open()
+            // int errFile
+
             execvp(vector[0], vector);
 
-            /*
-                DO SOMETHING HERE WITH CHILDREN
-            */
         }
 
 
