@@ -97,80 +97,80 @@ int main(int argc, char **argv) {
 
             numOfChildren++; //use this is map to filename arguments
 
+                // all child process open their own file: mapped with (numOfChildren)
+            if (id1 == 0)
+            {
+                // Each child process reads the numbers in their file
+                // and creates partial summation
+                // stored in result
+                fp = fopen(argv[numOfChildren], "r");
+
+                for(int i = 0; fscanf(fp, "%lf", &tmp) != EOF; i++)
+                {
+                    if(exponent == 1) {
+                        result += tmp;
+                    }
+                    else
+                    {
+                        result += pow(tmp, exponent);
+                    }
+                }
+
+                //printf("**result of pid[%i] and ppid[%i]: %0.2lf\n", getpid(), getppid(), result);
+            }
+            //printf("opening %s\n", argv[(int)(getpid() - mpid + 1)]);
+
+            // main process reads from pipe after waiting for each child
+            if(id1 != 0)
+            {
+                double readTmp = 0;
+                close(fd[1]); //main process doesn't write
+
+                // numOfProc - 1 is number of child processes
+                // b/c we use main process to read 1 of the files
+                //printf("result before partial sums: %0.2lf\n", result);
+                // for (int i = 0; i < numOfChildren; i++)
+                // {
+                //     wait(NULL);
+
+                //     read(fd[0], &readTmp, sizeof(double)); //read in from pipe
+
+                //     // print the number read from pipe and the number of items read
+                //     //printf("Result(%0.2lf) + readTmp(%0.2lf): ", result, readTmp);
+                //     result += readTmp;
+                //     //printf("%0.2lf\n", result);
+                // }
+
+                    while(wait(NULL) > 0);
+
+                    for (int i = 0; i < numOfChildren; i++) 
+                    {
+                        read(fd[0], &readTmp, sizeof(double)); //read in from pipe
+                        // print the number read from pipe and the number of items read
+                        printf("Result(%0.2lf) + readTmp(%0.2lf): ", result, readTmp);
+                        result += readTmp;
+                        //printf("%0.2lf\n", result);
+                    }
+
+                close(fd[0]);
+
+                printf("%0.2lf\n", result);
+            }
+            else // child processes write to pipe and return when finished
+            {
+                //printf("process %i, writing %0.2lf\n", getpid(), result);
+                close(fd[0]); // we are not reading from child;
+
+                while(write(fd[1], &result, sizeof(double)) < 0); // each child writes their partial sum to pipe
+                
+                close(fd[1]);
+                return 0;
+            }
+
             if (id1 == 0) // all children leave loop after created
             {
                 break;
             }
-        }
-
-        // all child process open their own file: mapped with (numOfChildren)
-        if (id1 == 0)
-        {
-            // Each child process reads the numbers in their file
-            // and creates partial summation
-            // stored in result
-            fp = fopen(argv[numOfChildren], "r");
-
-            for(int i = 0; fscanf(fp, "%lf", &tmp) != EOF; i++)
-            {
-                if(exponent == 1) {
-                    result += tmp;
-                }
-                else
-                {
-                    result += pow(tmp, exponent);
-                }
-            }
-
-            //printf("**result of pid[%i] and ppid[%i]: %0.2lf\n", getpid(), getppid(), result);
-        }
-        //printf("opening %s\n", argv[(int)(getpid() - mpid + 1)]);
-
-        // main process reads from pipe after waiting for each child
-        if(id1 != 0)
-        {
-            double readTmp = 0;
-            close(fd[1]); //main process doesn't write
-
-            // numOfProc - 1 is number of child processes
-            // b/c we use main process to read 1 of the files
-            //printf("result before partial sums: %0.2lf\n", result);
-            // for (int i = 0; i < numOfChildren; i++)
-            // {
-            //     wait(NULL);
-
-            //     read(fd[0], &readTmp, sizeof(double)); //read in from pipe
-
-            //     // print the number read from pipe and the number of items read
-            //     //printf("Result(%0.2lf) + readTmp(%0.2lf): ", result, readTmp);
-            //     result += readTmp;
-            //     //printf("%0.2lf\n", result);
-            // }
-
-                while(wait(NULL) > 0);
-
-                for (int i = 0; i < numOfChildren; i++) 
-                {
-                    read(fd[0], &readTmp, sizeof(double)); //read in from pipe
-                    // print the number read from pipe and the number of items read
-                    //printf("Result(%0.2lf) + readTmp(%0.2lf): ", result, readTmp);
-                    result += readTmp;
-                    //printf("%0.2lf\n", result);
-                }
-
-            close(fd[0]);
-
-            printf("%0.2lf\n", result);
-        }
-        else // child processes write to pipe and return when finished
-        {
-            //printf("process %i, writing %0.2lf\n", getpid(), result);
-            close(fd[0]); // we are not reading from child;
-
-            while(write(fd[1], &result, sizeof(double)) < 0); // each child writes their partial sum to pipe
-            
-            close(fd[1]);
-            return 0;
         }
         return 0;
     }
