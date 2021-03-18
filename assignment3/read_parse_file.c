@@ -7,117 +7,191 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-int main(void)
+int main(int argc, char * argv[])
 {
     FILE * fp;
     char * line = NULL;
     size_t len = 0;
     ssize_t read;
+    int numOfCommands = 0;
 
     // this is us making a static array to hold as many as 50 words each up to 49 characters long
     // we can make this dynamically allocated array by parsing through file first and finding
     // the longest word and the max amount of words
-    int i,j,ctr, maxStrLen = 0, maxNumOfLines = 0;
-    fp = fopen("cmdfile.txt", "r");
+    fp = fopen(argv[1], "r");
+    if (!fp) 
+    {
+                fclose(fp);
+                printf("range: cannot open file\n");
+                return 1; // file failed to open.
+    }
 
     while ((read = getline(&line, &len, fp)) != -1) 
     {
-        j=0; ctr=0; //ctr stores the amount of words in the 2d array!
-
-        for(i=0; i<= (strlen(line)); i++)
-        {
-            // if space or NULL found, assign NULL into newString[ctr]
-            if(line[i]==' '|| line[i]=='\0')
-            {
-                printf("j + 1: %d\n", j + 1);
-                ctr++;  //for next word
-                maxStrLen = (j > maxStrLen)? j + 1: maxStrLen;
-                maxNumOfLines = (j > maxNumOfLines)? ctr: maxNumOfLines;
-                j=0;    //for next word, init index to 0
-            }
-            else
-            {
-                j++;
-            }
-        }
+        numOfCommands++;
     }
 
-    printf("maxStrLen: %d\nnumberOfWords = %d\n", maxStrLen, maxNumOfLines);
-    fclose(fp);
-    char newString[maxNumOfLines][maxStrLen]; 
-    
-
-    fp = fopen("cmdfile.txt", "r");
-    if (fp == NULL)
-        exit(EXIT_FAILURE);
-
-    while ((read = getline(&line, &len, fp)) != -1) 
-    {
-
-        printf("---------------------------------------\n");
-
-        printf("\n\n Split string by space into words :\n");
-
-        printf("Retrieved line of length %zu:\n", read);
-        printf("%s\n", line);
-        printf("string length of line: %lu\n", strlen(line));
-
-
-        //reseting the char array
-	    for (i=0; i<20; i++) 
-        {
-            for (j=0; j<20; j++)
-            {
-                newString[i][j]=0;
-            }
-        }
-
-    	j=0; ctr=0; //ctr stores the amount of words in the 2d array!
-
-        for(i=0; i<= (strlen(line)); i++)
-        {
-            // if space or NULL found, assign NULL into newString[ctr]
-            if(line[i]==' '||line[i]=='\0')
-            {
-                printf("j = %d\n", j);
-                newString[ctr][j]='\0';
-                ctr++;  //for next word
-                j=0;    //for next word, init index to 0
-            }
-            else
-            {
-                newString[ctr][j]=line[i];
-                j++;
-            }
-        }
-
-        printf("\n Strings or words after split by space are :\n");
-        for(i=0;i < ctr;i++) 
-        {
-            printf(" %s\n", newString[i]);
-        }
-    }
-
-    char *vector[maxNumOfLines + 1];
-    for(int i = 0; i < maxNumOfLines; i++) 
-    {
-        vector[i] = (char *) &newString[i][0];
-        printf("vector[%i] = %s\n", i, vector[i]);
-    }
-    vector[maxNumOfLines] = (char *) 0;
-    
-
-    printf("\n%s\n",newString[maxNumOfLines - 1]);
-    //so basically after the 2d char array has completed, the words are stored in each row of the array 
-    // there value of ctr holds the amount of words in the array.
+    printf("number of commands: %d\n", numOfCommands);
 
     fclose(fp);
-    if (line)
-    {
-        free(line);
-    }
 
-    execvp(vector[0], vector);
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+
+    int id1 = 0, numOfChildren = 0;
+
+    while (numOfChildren < numOfCommands) // only main process performs loop
+    {
+        id1 = fork();
+        if (id1 == -1) {
+            printf("Fork failed");
+            return 1;
+        }
+
+        numOfChildren++; //use this is map to filename arguments
+
+            // all child process open their own file: mapped with (numOfChildren)
+        if (id1 == 0)
+        {
+            int i,j,ctr, maxStrLen = 0, maxNumOfWords = 0;
+            fp = fopen(argv[1], "r");
+            if (!fp) 
+            {
+                        fclose(fp);
+                        printf("range: cannot open file\n");
+                        return 1; // file failed to open.
+            }
+
+            //get the correct line for the child
+            for(int i = 0; i < numOfChildren; i++) 
+            {
+                if((read = getline(&line, &len, fp)) == -1) 
+                {
+                    printf("read failed with child: %i\n", numOfChildren);
+                    return 1;
+                }       
+            }
+            j=0; ctr=0; //ctr stores the amount of words in the 2d array!
+
+            for(i=0; i<= (strlen(line)); i++)
+            {
+                // if space or NULL found, assign NULL into newString[ctr]
+                if(line[i]==' '|| line[i]=='\0')
+                {
+                    ctr++;  //for next word
+                    maxStrLen = (j > maxStrLen)? j + 1: maxStrLen;
+                    maxNumOfWords = (ctr > maxNumOfWords)? ctr : maxNumOfWords;
+                    j=0;    //for next word, init index to 0
+                }
+                else
+                {
+                    j++;
+                }
+            }
+            
+            // Each child process reads the numbers in their file
+            // and creates partial summation
+            // stored in result
+            fp = fopen(argv[1], "r");
+            if (fp == NULL) {
+                exit(EXIT_FAILURE);
+            }
+
+            char newString[maxNumOfWords][maxStrLen]; 
+
+            // //get the correct line for the child
+            // for(int i = 0; i < numOfChildren; i++) 
+            // {
+            //     if((read = getline(&line, &len, fp)) == -1) 
+            //     {
+            //         printf("read failed with child: %i\n", numOfChildren);
+            //         return 1;
+            //     }       
+            // }
+
+            printf("---------------------------------------\n");
+            printf("\n\n Split string by space into words :\n");
+            printf("Retrieved line of length %zu:\n", read);
+            printf("%s\n", line);
+
+
+            j=0; ctr=0; //ctr stores the amount of words in the 2d array!
+
+            for(i=0; i<= (strlen(line)); i++)
+            {
+                // if space or NULL found, assign NULL into newString[ctr]
+                if(line[i]==' '||line[i]=='\0' || line[i] == '\n')
+                {
+                    newString[ctr][j]='\0';
+                    ctr++;  //for next word
+                    j=0;    //for next word, init index to 0
+                }
+                else
+                {
+                    newString[ctr][j]=line[i];
+                    j++;
+                }
+            }
+
+            printf("\n Strings or words after split by space are :\n");
+            for(i=0;i < ctr;i++) 
+            {
+                printf(" %s\n", newString[i]);
+            }
+
+            printf("maxNumOfWords: %d\n", maxNumOfWords);
+
+            char* vector[maxNumOfWords + 1];
+            for(int i = 0; i < maxNumOfWords; i++) 
+            {
+                vector[i] = (char *) &newString[i][0];
+                printf("vector[%i] = _%s_\n", i, vector[i]);
+            }
+            vector[maxNumOfWords] = (char*) 0;
+
+            fclose(fp);
+            if (line)
+            {
+                free(line);
+            }
+
+            execvp(vector[0], vector);
+
+            /*
+                DO SOMETHING HERE WITH CHILDREN
+            */
+        }
+
+
+        // main process reads from pipe after waiting for each child
+        if(id1 != 0)
+        {
+            //DO SOMETHING HERE WITH PARENT PROCESS
+            while(wait(NULL) > 0);
+        }
+        else 
+        {
+             //DO SOMETHING HERE WITH CHILD PROCESS
+        }
+
+        if (id1 == 0) // all children leave loop after created
+        {
+            break;
+        }
+    }           
+
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+/*________________________________________________________________________________________________________________*/
+
+
     exit(EXIT_SUCCESS);
 }
 
