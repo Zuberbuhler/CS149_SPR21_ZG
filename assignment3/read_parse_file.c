@@ -179,30 +179,58 @@ int main(int argc, char * argv[])
             int pid = getpid();
 
             int numOfDigits = getNumOfDigits(pid);
-            char * result2 = (char *)malloc(sizeof(char) * (numOfDigits + 5));
-            char * result1 = (char *)malloc(sizeof(char) * (numOfDigits + 5));
-            pidToStr(pid, numOfDigits, result1);
-            pidToStr(pid, numOfDigits, result2);
-            result1[numOfDigits] = '.';
-            result1[numOfDigits + 1] = 'o';
-            result1[numOfDigits + 2] = 'u';
-            result1[numOfDigits + 3] = 't';
-            result1[numOfDigits + 4] = '\0';
+            char * errFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+            char * outFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+            pidToStr(pid, numOfDigits, outFileName);
+            pidToStr(pid, numOfDigits, errFileName);
+            outFileName[numOfDigits] = '.';
+            outFileName[numOfDigits + 1] = 'o';
+            outFileName[numOfDigits + 2] = 'u';
+            outFileName[numOfDigits + 3] = 't';
+            outFileName[numOfDigits + 4] = '\0';
 
-            result2[numOfDigits] = '.';
-            result2[numOfDigits + 1] = 'e';
-            result2[numOfDigits + 2] = 'r';
-            result2[numOfDigits + 3] = 'r';
-            result2[numOfDigits + 4] = '\0';
+            errFileName[numOfDigits] = '.';
+            errFileName[numOfDigits + 1] = 'e';
+            errFileName[numOfDigits + 2] = 'r';
+            errFileName[numOfDigits + 3] = 'r';
+            errFileName[numOfDigits + 4] = '\0';
 
-            printf("String version of PID: _%s_\n", result1);
-            printf("String version of PID: _%s_\n", result2);
+            printf("String version of PID: _%s_\n", outFileName);
+            printf("String version of PID: _%s_\n", errFileName);
 
             /* Redirect the output! */
-            // int outFile = open()
-            // int errFile
+            int outFile = open(outFileName, O_WRONLY | O_CREAT, 0777);
+            if(outFile == -1) 
+            {
+                return 2;
+            }
 
-            execvp(vector[0], vector);
+            int errFile = open(errFileName, O_WRONLY | O_CREAT, 0777);
+            if(errFile == -1) 
+            {
+                return 2;
+            }
+
+            /*
+
+            STDERR_FILENO
+                File number of stderr; 2.
+            STDIN_FILENO
+                File number of stdin; 0.
+            STDOUT_FILENO
+                File number of stdout; 1.
+
+            */
+            int outFile2 = dup2(outFile, STDOUT_FILENO);
+            int errFile2 = dup2(outFile, STDERR_FILENO);
+
+            close(outFile);
+            close(errFile);
+            if(execvp(vector[0], vector) == -1) 
+            {
+                printf("Executable Failed!\n");
+                return 2;
+            }
 
         }
 
