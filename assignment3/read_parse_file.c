@@ -229,7 +229,7 @@ int main(int argc, char * argv[])
             close(outFile);
             close(errFile);
 
-            printf("Starting command %i: child %i pid of parent %i\n", numOfCommands, getpid(), getppid());
+            printf("Starting command %i: child %i pid of parent %i\n", numOfChildren, getpid(), getppid());
 
             if(execvp(vector[0], vector) == -1) 
             {
@@ -257,6 +257,52 @@ int main(int argc, char * argv[])
                     if(statusCode == 0) 
                     {
                         printf("Success!\n");
+                        int cpid = pid2;
+
+                        int numOfDigits = getNumOfDigits(cpid);
+                        char * errFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+                        char * outFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+
+                        pidToStr(cpid, numOfDigits, outFileName);
+                        pidToStr(cpid, numOfDigits, errFileName);
+
+                        outFileName[numOfDigits] = '.';
+                        outFileName[numOfDigits + 1] = 'o';
+                        outFileName[numOfDigits + 2] = 'u';
+                        outFileName[numOfDigits + 3] = 't';
+                        outFileName[numOfDigits + 4] = '\0';
+
+                        errFileName[numOfDigits] = '.';
+                        errFileName[numOfDigits + 1] = 'e';
+                        errFileName[numOfDigits + 2] = 'r';
+                        errFileName[numOfDigits + 3] = 'r';
+                        errFileName[numOfDigits + 4] = '\0';
+
+                        printf("String version of PID: _%s_\n", outFileName);
+                        printf("String version of PID: _%s_\n", errFileName);
+
+                        /* Redirect the output! */
+                        FILE * outFile = fopen(outFileName, "a+b");
+                        if(outFile == NULL) 
+                        {
+                            return 2;
+                        }
+
+                        FILE * errFile = fopen(errFileName, "a+b");
+                        if(errFile == NULL) 
+                        {
+                            return 2;
+                        }
+
+                        fprintf(outFile, "Finished child %i pid of parent %i", cpid, getpid());
+
+
+                        fclose(outFile);
+                        fclose(errFile);
+
+
+                        printf("Finished child %i pid of parent %i\n", cpid, getpid());
+
                     }
                     else 
                     {
