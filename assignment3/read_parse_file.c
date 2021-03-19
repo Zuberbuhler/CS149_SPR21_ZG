@@ -181,8 +181,10 @@ int main(int argc, char * argv[])
             int numOfDigits = getNumOfDigits(pid);
             char * errFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
             char * outFileName = (char *)malloc(sizeof(char) * (numOfDigits + 5));
+
             pidToStr(pid, numOfDigits, outFileName);
             pidToStr(pid, numOfDigits, errFileName);
+
             outFileName[numOfDigits] = '.';
             outFileName[numOfDigits + 1] = 'o';
             outFileName[numOfDigits + 2] = 'u';
@@ -199,13 +201,13 @@ int main(int argc, char * argv[])
             printf("String version of PID: _%s_\n", errFileName);
 
             /* Redirect the output! */
-            int outFile = open(outFileName, O_WRONLY | O_CREAT, 0777);
+            int outFile = open(outFileName, O_RDWR | O_CREAT | O_APPEND, 0777);
             if(outFile == -1) 
             {
                 return 2;
             }
 
-            int errFile = open(errFileName, O_WRONLY | O_CREAT, 0777);
+            int errFile = open(errFileName, O_RDWR | O_CREAT | O_APPEND, 0777);
             if(errFile == -1) 
             {
                 return 2;
@@ -226,11 +228,17 @@ int main(int argc, char * argv[])
 
             close(outFile);
             close(errFile);
+
+            printf("Starting command %i: child %i pid of parent %i\n", numOfCommands, getpid(), getppid());
+
             if(execvp(vector[0], vector) == -1) 
             {
                 printf("Executable Failed!\n");
                 return 2;
             }
+
+            free(errFileName);
+            free(errFileName);
 
         }
 
@@ -238,8 +246,24 @@ int main(int argc, char * argv[])
         // main process reads from pipe after waiting for each child
         if(id1 != 0)
         {
+            int pid2, wstatus;
             //DO SOMETHING HERE WITH PARENT PROCESS
-            while(wait(NULL) > 0);
+            while((pid2 = wait(&wstatus)) > 0)
+            {
+                printf("pid2: %d\n", pid2);
+                if(WIFEXITED(wstatus))
+                {
+                    int statusCode = WEXITSTATUS(wstatus);
+                    if(statusCode == 0) 
+                    {
+                        printf("Success!\n");
+                    }
+                    else 
+                    {
+                        printf("Failure with statusCode: %d\n", statusCode);
+                    }   
+                }
+            }
         }
         else 
         {
