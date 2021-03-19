@@ -16,12 +16,14 @@ int getNumOfDigits(int x)
         numOfDigits++;
         tmp /= 10;
     }
+
     return numOfDigits;
 }
 
 void pidToStr(int pid, int numOfDigits, char *result) 
 {
     int tmp = pid;
+
     for (int i = numOfDigits - 1; i > -1; i--) 
     {
         result[i] = tmp % 10 + '0';
@@ -38,6 +40,9 @@ int main(int argc, char * argv[])
     ssize_t read;
     int numOfCommands = 0;
 
+    // this is us making a static array to hold as many as 50 words each up to 49 characters long
+    // we can make this dynamically allocated array by parsing through file first and finding
+    // the longest word and the max amount of words
     fp = fopen(argv[1], "r");
     if (!fp) 
     {
@@ -50,6 +55,8 @@ int main(int argc, char * argv[])
     {
         numOfCommands++;
     }
+
+    // printf("number of commands: %d\n", numOfCommands);
 
     fclose(fp);
 
@@ -104,10 +111,8 @@ int main(int argc, char * argv[])
                     j++;
                 }
             }
-            
-            // Each child process reads the numbers in their file
-            // and creates partial summation
-            // stored in result
+            fclose(fp);
+           
             fp = fopen(argv[1], "r");
             if (fp == NULL) 
             {
@@ -115,12 +120,6 @@ int main(int argc, char * argv[])
             }
 
             char newString[maxNumOfWords][maxStrLen]; 
-
-            // printf("---------------------------------------\n");
-            // printf("\n\n Split string by space into words :\n");
-            // printf("Retrieved line of length %zu:\n", read);
-            // printf("%s\n", line);
-
 
             j=0; ctr=0; //ctr stores the amount of words in the 2d array!
 
@@ -175,6 +174,9 @@ int main(int argc, char * argv[])
             errFileName[numOfDigits + 3] = 'r';
             errFileName[numOfDigits + 4] = '\0';
 
+            // printf("String version of PID: _%s_\n", outFileName);
+            // printf("String version of PID: _%s_\n", errFileName);
+
             /* Redirect the output! */
             int outFile = open(outFileName, O_RDWR | O_CREAT | O_APPEND, 0777);
             if(outFile == -1) 
@@ -187,28 +189,37 @@ int main(int argc, char * argv[])
                 return 2;
             }
 
+            fflush(stdout);
+
             // redirect output to STDOUT and STDERR
             int outFile2 = dup2(outFile, STDOUT_FILENO);
             int errFile2 = dup2(errFile, STDERR_FILENO);
 
+            printf("Starting command %i: child %i pid of parent %i\n", numOfChildren, getpid(), getppid());
+            fflush(stdout);
             close(outFile);
             close(errFile);
+            
+            if (outFileName) 
+            {
+                free(outFileName);
+            }
+            if (errFileName)
+            {
+                free(errFileName);
+            }
+            
 
-            printf("Starting command %i: child %i pid of parent %i\n", numOfChildren, getpid(), getppid());
-            free(outFileName);
-            free(errFileName);
-
-            if(execvp(vector[0], vector) == -1) 
+            if(execvp(vector[0], vector) == -1) // ls, -latr, NULL 
             {
                 int errFile2 = dup2(errFile2, STDOUT_FILENO);
                 perror(vector[0]);
                 return 2;
             }
         }
-        else //parent process
+        else
         {
             int pid2, wstatus;
-
             while((pid2 = wait(&wstatus)) > 0)
             {
                 // printf("pid2: %d\n", pid2);
@@ -239,6 +250,9 @@ int main(int argc, char * argv[])
                         errFileName[numOfDigits + 3] = 'r';
                         errFileName[numOfDigits + 4] = '\0';
 
+                        // printf("String version of PID: _%s_\n", outFileName);
+                        // printf("String version of PID: _%s_\n", errFileName);
+
                         /* Redirect the output! */
                         FILE * outFile = fopen(outFileName, "a+b");
                         if(outFile == NULL) 
@@ -254,6 +268,7 @@ int main(int argc, char * argv[])
 
                         fprintf(outFile, "Finished child %i pid of parent %i", cpid, getpid());
                         fprintf(errFile, "Exited with exitcode = %i", wstatus);
+
 
                         fclose(outFile);
                         fclose(errFile);
@@ -282,6 +297,9 @@ int main(int argc, char * argv[])
                     errFileName[numOfDigits + 3] = 'r';
                     errFileName[numOfDigits + 4] = '\0';
 
+                    // printf("String version of PID: _%s_\n", outFileName);
+                    // printf("String version of PID: _%s_\n", errFileName);
+
                     /* Redirect the output! */
                     FILE * outFile = fopen(outFileName, "a+b");
                     if(outFile == NULL) 
@@ -298,11 +316,8 @@ int main(int argc, char * argv[])
                     fprintf(outFile, "Finished child %i pid of parent %i", cpid, getpid());
                     fprintf(errFile, "Killed with signal %i", WTERMSIG(wstatus));
 
-                    free(errFileName);
-                    free(outFileName);
                     fclose(outFile);
                     fclose(errFile);
-
                 }
                 else 
                 {
@@ -311,6 +326,7 @@ int main(int argc, char * argv[])
             }
         }
     }           
+
 
     exit(EXIT_SUCCESS);
 }

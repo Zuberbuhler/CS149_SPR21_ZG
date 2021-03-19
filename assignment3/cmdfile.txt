@@ -1,7 +1,7 @@
-sleep 5
+sleep 10
 ls -latr
 sleep 3
 pwd
 sleep 1
 wc /etc/passwd
-ping -c 3 google.com
+ping -c 3 google.con
