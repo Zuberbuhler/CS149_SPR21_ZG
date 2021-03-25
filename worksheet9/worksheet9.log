@@ -1,0 +1,16 @@
+    1  cd Desktop/
+    2  ls
+    3  cd
+    4  ls
+    5  cd apue.3e/
+    6  ls
+    7  cd signals/
+    8  ls
+    9  make all
+   10  ./sigusr &
+   11  kill -sigusr1 1750
+   12  kill -SIGUSR1 1750
+   13  kill -SIGUSR2 1750
+   14  kill -SIGCONT 1750
+   15  kill -9 1750
+   16  history > worksheet9.log
