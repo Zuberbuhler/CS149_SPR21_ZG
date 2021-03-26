@@ -1,3 +1,6 @@
+/*
+ * Code by Matthew Zuberbuhler & Sergio Gutierrez
+ */
 #include "apue.h"
 
 static void    sig_usr(int);    /* one handler for both signals /
