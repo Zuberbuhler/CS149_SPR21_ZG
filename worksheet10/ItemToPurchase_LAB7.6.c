@@ -1,3 +1,6 @@
+/*
+ * Code by Matthew Zuberbuhler & Sergio Gutierrez
+ */
 #include<stdio.h>
 #include<string.h>
 

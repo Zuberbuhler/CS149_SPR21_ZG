@@ -1,3 +1,6 @@
+/*
+ * Code by Matthew Zuberbuhler & Sergio Gutierrez
+ */
 #ifndef ITEM_TO_PURCHASE_H
 #define ITEM_TO_PURCHASE_H
 
