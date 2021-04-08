@@ -44,7 +44,7 @@ static struct nlist *hashtab[HASHSIZE]; /* pointer table */
 /* You can use a simple hash function: pid % HASHSIZE */
 unsigned hash(int pid)
 {
-    printf("Hash: return\n");
+    printf("Hash: returning hash: %i\n", pid % HASHSIZE);
     return pid % HASHSIZE;
 }
 
@@ -58,7 +58,7 @@ table. The array position to look in is returned by the hash function
 
 struct nlist *lookup(int pid)
 {
-    printf("Lookup: Start\n");
+    printf("Lookup: Start-> ");
     struct nlist *np;
     for (np = hashtab[hash(pid)]; np != NULL; np = np->next)
     {
@@ -79,7 +79,7 @@ struct nlist *lookup(int pid)
 new pid and its command */
 
 /* TODO: change signature to:
-	struct nlist *insert(char *command,int pid, int index). */
+    struct nlist *insert(char *command,int pid, int index). */
 
 /* This insert returns a nlist node.
 Thus when you call insert inyour main function  */
@@ -93,20 +93,20 @@ Thus when you call insert inyour main function  */
 //char *name, char *defn
 struct nlist *insert(char *command, int pid, int index)
 {
-    printf("Inserting Start:\n");
+    printf("Inserting Start:-> ");
     struct nlist *np;
     unsigned hashval;
     //TODO change to lookup by pid. There are 2 cases:
     if ((np = lookup(pid)) == NULL)
     {
-        printf("Inserting: case1 creating new node in slot np\n");
+        printf("Inserting: case1 creating new node in slot np-> ");
         /* case 1: the pid is not
         found, so you have to create it with malloc.
         Then you want to set the pid, command and index */
         np = (struct nlist *) malloc(sizeof(*np));
         if (np == NULL || ((np->command = strdup(command)) == NULL))
         {
-            printf("Inserting: Failed to malloc np\n");
+            printf("Inserting: Failed to malloc np and returning NULL\n");
             return NULL;
         }
         np->pid = pid;
@@ -117,7 +117,7 @@ struct nlist *insert(char *command, int pid, int index)
         hashtab[hashval] = np;
     } else
     {
-        printf("Inserting: Case2 np found in slot already\n");
+        printf("Inserting: Case2 np found in slot already-> ");
         /* case 2: the pid is already there in the hashslot,
         i.e. lookup found the pid. In this case you can either
         do nothing, or you may want to set again the command
@@ -125,7 +125,7 @@ struct nlist *insert(char *command, int pid, int index)
         free((void *) np->command); /*free previous command */
         if ((np->command = strdup(command)) == NULL)
         {
-            printf("Inserting: updating np->command failed\n");
+            printf("Inserting: updating np->command failed and return null\n");
             return NULL;
         }
         np->index = index;
@@ -143,7 +143,7 @@ It depends on your implementation. **/
 
 char* strduplicate(char *s) /* make a duplicate of s */
 {
-    printf("strduplicate: Start\n");
+    printf("strduplicate: Start ->");
     char *p;
     p = (char *) malloc(strlen(s)+1); /* +1 for \0 */
 
@@ -159,26 +159,27 @@ char* strduplicate(char *s) /* make a duplicate of s */
 int main() {
     char * command = "ping -c 3 google.com";
     int pid1 = 101;
+    int pid2 = 0;
     int index1 = 1, index2;
 
     struct nlist* myNode1 = insert(command, pid1, index1);
 
-    struct nlist* myNode2 = insert(command, pid1, index2);
+    struct nlist* myNode2 = insert(command, pid2, index2);
     if(myNode2 != NULL) {
-        printf("myNode2->pid = %i\n"
+        printf("\nmyNode2->pid = %i\n"
                "myNode2->index = %i\n"
-               "myNode2->command = %s\n\n",
+               "myNode2->command = _%s_\n\n",
                myNode2->pid, myNode2->index, myNode2->command);
     }
 
     printf("myNode1->pid = %i\n"
            "myNode1->index = %i\n"
-           "myNode1->command = %s\n",
+           "myNode1->command = _%s_\n",
            myNode1->pid, myNode1->index, myNode1->command);
 
 
+    printf("pid of myNode2->next: %i", myNode2->next->pid);
 
 
     return 0;
 }
-

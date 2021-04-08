@@ -19,7 +19,7 @@ void fun()
 int main()
 {
     // Calculate the time taken by fun()
-    struct timespec start = {0,0}, finish = {0,0};
+    struct timespec start, finish;
     double elapsed = 0;
 
     clock_t t;

@@ -1,9 +1,8 @@
-/*
-    Code by Sergio and Matthew
-*/
-#include <stdio.h>
+//// Created on 3/17/21.
+// Sample solution//#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -18,7 +17,8 @@ struct nlist
     // char *defn; /* replacement text, can remove */
 
     /* starttime and finishtime */
-    struct timespec starttime, finishtime;
+    struct timespec start;
+    struct timespec finish;
 
     /* index // this is the line index in the input text file */
     int index;
@@ -35,7 +35,7 @@ struct nlist
 };
 
 #define HASHSIZE 101
-
+int HashTableSize = 0;
 static struct nlist *hashtab[HASHSIZE]; /* pointer table */
 
 /* This is the hash function: form hash value for string s */
@@ -45,7 +45,7 @@ static struct nlist *hashtab[HASHSIZE]; /* pointer table */
 /* You can use a simple hash function: pid % HASHSIZE */
 unsigned hash(int pid)
 {
-    printf("Hash: returning hash: %i\n", pid % HASHSIZE);
+    //printf("Hash: returning hash: %i\n", pid % HASHSIZE);
     return pid % HASHSIZE;
 }
 
@@ -59,18 +59,18 @@ table. The array position to look in is returned by the hash function
 
 struct nlist *lookup(int pid)
 {
-    printf("Lookup: Start-> ");
+    //printf("Lookup: Start-> ");
     struct nlist *np;
     for (np = hashtab[hash(pid)]; np != NULL; np = np->next)
     {
         if (np->pid == pid)
         {
-            printf("Lookup: found pid in slot already!\n");
+            //printf("Lookup: found pid in slot already!\n");
             return np; /* found */
         }
 
     }
-    printf("Lookup: End\n");
+    //printf("Lookup: End\n");
     return NULL; /* not found */
 }
 
@@ -94,20 +94,21 @@ Thus when you call insert inyour main function  */
 //char *name, char *defn
 struct nlist *insert(char *command, int pid, int index)
 {
-    printf("Inserting Start:-> ");
+    //printf("Inserting Start:-> ");
     struct nlist *np;
     unsigned hashval;
     //TODO change to lookup by pid. There are 2 cases:
     if ((np = lookup(pid)) == NULL)
     {
-        printf("Inserting: case1 creating new node in slot np-> ");
+        HashTableSize++;
+        //printf("Inserting: case1 creating new node in slot np-> ");
         /* case 1: the pid is not
         found, so you have to create it with malloc.
         Then you want to set the pid, command and index */
         np = (struct nlist *) malloc(sizeof(*np));
         if (np == NULL || ((np->command = strdup(command)) == NULL))
         {
-            printf("Inserting: Failed to malloc np and returning NULL\n");
+            //printf("Inserting: Failed to malloc np and returning NULL\n");
             return NULL;
         }
         np->pid = pid;
@@ -118,7 +119,7 @@ struct nlist *insert(char *command, int pid, int index)
         hashtab[hashval] = np;
     } else
     {
-        printf("Inserting: Case2 np found in slot already-> ");
+        //printf("Inserting: Case2 np found in slot already-> ");
         /* case 2: the pid is already there in the hashslot,
         i.e. lookup found the pid. In this case you can either
         do nothing, or you may want to set again the command
@@ -126,14 +127,14 @@ struct nlist *insert(char *command, int pid, int index)
         free((void *) np->command); /*free previous command */
         if ((np->command = strdup(command)) == NULL)
         {
-            printf("Inserting: updating np->command failed and return null\n");
+            //printf("Inserting: updating np->command failed and return null\n");
             return NULL;
         }
         np->index = index;
     }
 
 
-    printf("Inserting: End\n");
+    //printf("Inserting: End\n");
     return np;
 }
 
@@ -144,7 +145,7 @@ It depends on your implementation. **/
 
 char* strduplicate(char *s) /* make a duplicate of s */
 {
-    printf("strduplicate: Start ->");
+    //printf("strduplicate: Start ->");
     char *p;
     p = (char *) malloc(strlen(s)+1); /* +1 for \0 */
 
@@ -153,13 +154,12 @@ char* strduplicate(char *s) /* make a duplicate of s */
         strcpy(p, s);
     }
 
-    printf("strduplicate: End\n");
+    //printf("strduplicate: End\n");
     return p;
 }
 
 //helper method to do execvp
-void doExecvp(char lineToParse[], int commandNum)
-{
+void doExecvp(char lineToParse[], int commandNum) {
 
     //make name of the file
     int pid = getpid();
@@ -172,11 +172,11 @@ void doExecvp(char lineToParse[], int commandNum)
     char addMe[] = ".out";
     strcat(pidArr, addMe);
 
-    int f_write = open(pidArr, O_RDWR|O_CREAT|O_TRUNC, 0777);
+    int f_write = open(pidArr, O_RDWR | O_CREAT | O_TRUNC, 0777);
     //creates a copy of the file descriptor f_write
-
     dup2(f_write, fileno(stdout));
-    fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", commandNum,getpid(), getppid());
+
+    fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", commandNum, getpid(), getppid());
     //move the buffered data to console
 
     fflush(stdout);
@@ -187,7 +187,7 @@ void doExecvp(char lineToParse[], int commandNum)
     int index = 0;
 
     //parsing    
-    while(token != NULL){
+    while (token != NULL) {
         input[index] = token;
         index++;
         token = strtok(NULL, " \n");
@@ -199,31 +199,31 @@ void doExecvp(char lineToParse[], int commandNum)
     //fprintf(stdout,"Finished child %d pid of parent %d\n", getpid(), getppid());
 
     fflush(stdout);
+    fflush(stderr);
 
     close(f_write);
 
     //call execvp    
-    execvp(input[0], input);
+    if (execvp(input[0], input) == -1) {
+        char pidArrforError[10];
 
-    //If execvp succeeds it doesn't run below but if Execvp fails and it runs the following:   
+        printf("Testing\n");
+        //convert int pid to string
+        sprintf(pidArrforError, "%d", pid);
+        char addMeError[] = ".err";
 
-    //make name of the file
-    char pidArrforError[10];
+        // concatenate
+        strcat(pidArrforError, addMeError);
 
-    //convert int pid to string    
-    sprintf(pidArrforError, "%d", pid);
-    char addMeError[] = ".err";
-
-    // concatenate    
-    strcat(pidArrforError, addMeError);
-
-    int f_err = open(pidArrforError, O_RDWR | O_CREAT | O_TRUNC,0777);
-
-    dup2(f_err, fileno(stderr));
-
-    perror("Execvp failed\n");
-
-    close(f_err);
+        int f_err = open(pidArrforError, O_RDWR | O_CREAT | O_APPEND, 0777);
+        //If execvp succeeds it doesn't run below but if Execvp fails and it runs the following:
+        dup2(f_err, STDOUT_FILENO);
+        dup2(f_err, STDERR_FILENO);
+        perror("Execvp failed: \n");
+        fflush(stdout);
+        fflush(stderr);
+        close(f_err);
+    }
 }
 
 int main(int argc, const char * argv[])
@@ -243,14 +243,22 @@ int main(int argc, const char * argv[])
 
     char result[100];
     int commandNum = 0;
+    struct timespec start, finish;
 
     //new line is recorded from text file
     while (fgets(result, 100, fp)){
         commandNum++;
+        //printf("result: _%s_\n", result);
+        //fflush(stdout);
+        //fflush(stderr);
 
         int pid = fork();
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        //store process data in hash
+        struct nlist* myNode = insert(result, pid, commandNum);
+        myNode->start = start;
+
         if(pid == 0){
-            //child process
             doExecvp(result, commandNum);
             exit(0);
 
@@ -265,9 +273,33 @@ int main(int argc, const char * argv[])
     int wpid;
 
     int status;
-
+    struct nlist* myNode1;
+    double elapsed;
+    printf("hashtable size = %i\n", HashTableSize);
     while( (wpid = wait(&status)) > 0)
     {
+        myNode1 = lookup(wpid);
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+        if(myNode1 != NULL)
+        {
+            myNode1->finish = finish;
+            elapsed = ((double)myNode1->finish.tv_sec + 1.0e-9*myNode1->finish.tv_nsec) -
+                      ((double)myNode1->start.tv_sec + 1.0e-9*myNode1->start.tv_nsec);
+
+            printf("myNode1->pid = %i\n"
+                   "myNode1->index = %i\n"
+                   "myNode1->command = _%s_\n"
+                   "elapsed time = %.5f\n\n",
+                   myNode1->pid, myNode1->index, myNode1->command, elapsed);
+
+        }
+        else {
+            printf("myNode1 = NULL!\n");
+        }
+
+
+        //fflush(stdout);
+        //fflush(stderr);
 
         char outFileName[20];
         sprintf(outFileName, "%d.out", wpid);
@@ -281,13 +313,9 @@ int main(int argc, const char * argv[])
         char pidArrforError[10];
 
         //convert int pid to string
-        sprintf(pidArrforError, "%d", wpid);
-        char addMeError[] = ".err";
+        sprintf(pidArrforError, "%d.err", wpid);
 
-        // concatenate        
-        strcat(pidArrforError, addMeError);
-
-        int f_err = open(pidArrforError, O_RDWR | O_CREAT | O_TRUNC,0777);
+        int f_err = open(pidArrforError, O_RDWR | O_CREAT | O_APPEND,0777);
 
         dup2(f_err, fileno(stderr));
 
