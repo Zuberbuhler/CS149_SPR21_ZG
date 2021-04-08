@@ -253,18 +253,21 @@ int main(int argc, const char * argv[])
         //fflush(stdout);
         //fflush(stderr);
 
-        int pid = fork();
         clock_gettime(CLOCK_MONOTONIC, &start);
-        //store process data in hash
-        struct nlist* myNode = insert(result, pid, commandNum);
-        myNode->start = start;
+        int pid = fork();
 
-        if(pid == 0){
+
+        if(pid == 0)
+        {
             doExecvp(result, commandNum);
             exit(0);
 
-        } else if(pid > 0){
-            //do nothing
+        }
+        else if(pid > 0) //parent process
+        {
+            //store process data in hash
+            struct nlist* myNode = insert(result, pid, commandNum);
+            myNode->start = start;
         } else {
             printf("Error in forking.\n");
             exit(1);
@@ -279,19 +282,21 @@ int main(int argc, const char * argv[])
     printf("hashtable size = %i\n", HashTableSize);
     while( (wpid = wait(&status)) > 0)
     {
+        fflush(stdout);
+        fflush(stderr);
         myNode1 = lookup(wpid);
         clock_gettime(CLOCK_MONOTONIC, &finish);
         if(myNode1 != NULL)
         {
             myNode1->finish = finish;
-            elapsed = ((double)myNode1->finish.tv_sec + 1.0e-9*myNode1->finish.tv_nsec) -
-                      ((double)myNode1->start.tv_sec + 1.0e-9*myNode1->start.tv_nsec);
+            elapsed = ((double)myNode1->finish.tv_sec + 1.0e-9 * myNode1->finish.tv_nsec)
+                        - ((double)myNode1->start.tv_sec + 1.0e-9 * myNode1->start.tv_nsec); //subtraction
 
-            printf("myNode1->pid = %i\n"
-                   "myNode1->index = %i\n"
-                   "myNode1->command = _%s_\n"
-                   "elapsed time = %.5f\n\n",
-                   myNode1->pid, myNode1->index, myNode1->command, elapsed);
+//            printf("myNode1->pid = %i\n"
+//                   "myNode1->index = %i\n"
+//                   "myNode1->command = _%s_\n"
+//                   "elapsed time = %.5f\n\n",
+//                   myNode1->pid, myNode1->index, myNode1->command, elapsed);
 
         }
         else {
@@ -324,14 +329,46 @@ int main(int argc, const char * argv[])
         //Normal termination with exit code        
         if(WIFEXITED(status)){
             fprintf(stderr, "Exited with exitcode = %d\n", WEXITSTATUS(status));
+            if(elapsed <= 2) {
+                fprintf(stderr, "spawning too fast");
+            }
         }
 
             //Abnormal Termination with exit signal
         else if(WIFSIGNALED(status)){
             fprintf(stderr, "Killed with signal = %d\n", WTERMSIG(status));
+            if(elapsed <= 2) {
+                fprintf(stderr, "spawning too fast");
+            }
         }
 
         close(f_err);
+
+        //decide if you will restart
+        if (elapsed > 2) {
+            //save the startime!
+            clock_gettime(CLOCK_MONOTONIC, &start);
+            int pid = fork();
+
+            if (pid < 0)
+            {
+                printf("Error in forking.\n");
+                exit(1);
+            }
+            if (pid == 0) //child
+            {
+            // See shell1_execvp.c for execvp usage
+                doExecvp(myNode1->command, myNode1->index);
+            } else if (pid > 0)
+            {
+                struct nlist* myNode2 = insert(myNode1->command, pid, myNode1->index);
+                myNode2->start = start;
+            }
+            else {
+                printf("Error in forking.\n");
+                exit(1);
+            }
+        }
     }
 
     return 0;
