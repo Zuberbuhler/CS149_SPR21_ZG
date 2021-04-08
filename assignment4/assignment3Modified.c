@@ -176,7 +176,8 @@ void doExecvp(char lineToParse[], int commandNum) {
     //creates a copy of the file descriptor f_write
     dup2(f_write, fileno(stdout));
 
-    fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", commandNum, getpid(), getppid());
+    fprintf(stdout, "Starting command %d: child %d pid of parent %d\n",
+                                        commandNum, getpid(), getppid());
     //move the buffered data to console
 
     fflush(stdout);
@@ -308,7 +309,8 @@ int main(int argc, const char * argv[])
         {
             return 2;
         }
-        fprintf(outFP, "Finished child %i pid of parent %i", wpid, getpid());
+        fprintf(outFP, "Finished child %i pid of parent %i\n", wpid, getpid());
+        fprintf(outFP, "Finished at %ld, runtime duration %.5f", myNode1->finish.tv_nsec, elapsed);
         //make name of the file
         char pidArrforError[10];
 
