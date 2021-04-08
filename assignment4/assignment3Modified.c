@@ -158,8 +158,18 @@ char* strduplicate(char *s) /* make a duplicate of s */
     return p;
 }
 
+void clearHashTable() {
+    for (int i = 0; i < HASHSIZE; i++)
+    {
+        if (hashtab[i] != NULL)
+        {
+            //free the entire linked list
+        }
+    }
+}
+
 //helper method to do execvp
-void doExecvp(char lineToParse[], int commandNum) {
+void doExecvp(char lineToParse[], int commandNum, int restartedProcess) {
 
     //make name of the file
     int pid = getpid();
@@ -175,6 +185,11 @@ void doExecvp(char lineToParse[], int commandNum) {
     int f_write = open(pidArr, O_RDWR | O_CREAT | O_TRUNC, 0777);
     //creates a copy of the file descriptor f_write
     dup2(f_write, fileno(stdout));
+
+    if(restartedProcess)
+    {
+        fprintf(stdout, "RESTARTING\n");
+    }
 
     fprintf(stdout, "Starting command %d: child %d pid of parent %d\n",
                                         commandNum, getpid(), getppid());
@@ -208,7 +223,6 @@ void doExecvp(char lineToParse[], int commandNum) {
     if (execvp(input[0], input) == -1) {
         char pidArrforError[10];
 
-        printf("Testing\n");
         //convert int pid to string
         sprintf(pidArrforError, "%d", pid);
         char addMeError[] = ".err";
@@ -259,7 +273,7 @@ int main(int argc, const char * argv[])
 
         if(pid == 0)
         {
-            doExecvp(result, commandNum);
+            doExecvp(result, commandNum, 0);
             exit(0);
 
         }
@@ -279,7 +293,9 @@ int main(int argc, const char * argv[])
     int status;
     struct nlist* myNode1;
     double elapsed;
-    printf("hashtable size = %i\n", HashTableSize);
+
+    //printf("hashtable size = %i\n", HashTableSize);
+
     while( (wpid = wait(&status)) > 0)
     {
         fflush(stdout);
@@ -358,7 +374,7 @@ int main(int argc, const char * argv[])
             if (pid == 0) //child
             {
             // See shell1_execvp.c for execvp usage
-                doExecvp(myNode1->command, myNode1->index);
+                doExecvp(myNode1->command, myNode1->index, 1);
             } else if (pid > 0)
             {
                 struct nlist* myNode2 = insert(myNode1->command, pid, myNode1->index);
