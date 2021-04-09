@@ -1,11 +1,11 @@
-//// Created on 3/17/21.
-// Sample solution//#include <stdio.h>
+/*
+ * Code by Matthew Zuberbuhler and Sergio Gutierrez
+ */
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <time.h>
 
@@ -13,8 +13,6 @@ struct nlist
 {
     /* table entry: */
     struct nlist *next; /* next entry in chain */
-    // char *name;  /* defined name, can remove */
-    // char *defn; /* replacement text, can remove */
 
     /* starttime and finishtime */
     struct timespec start;
@@ -143,27 +141,29 @@ you don't overwrite the previous command each time a new line
 is read from the input file. Or you might not need to duplicate it.
 It depends on your implementation. **/
 
-char* strduplicate(char *s) /* make a duplicate of s */
-{
-    //printf("strduplicate: Start ->");
-    char *p;
-    p = (char *) malloc(strlen(s)+1); /* +1 for \0 */
-
-    if (p != NULL)
-    {
-        strcpy(p, s);
-    }
-
-    //printf("strduplicate: End\n");
-    return p;
-}
+//char* strduplicate(char *s) /* make a duplicate of s */
+//{
+//    //printf("strduplicate: Start ->");
+//    char *p;
+//    p = (char *) malloc(strlen(s)+1); /* +1 for \0 */
+//
+//    if (p != NULL)
+//    {
+//        strcpy(p, s);
+//    }
+//
+//    //printf("strduplicate: End\n");
+//    return p;
+//}
 
 void clearHashTable() {
     for (int i = 0; i < HASHSIZE; i++)
     {
         if (hashtab[i] != NULL)
         {
-            //free the entire linked list
+            /*
+             * NOT REQUIRED
+             */
         }
     }
 }
@@ -251,35 +251,35 @@ int main(int argc, const char * argv[])
 
     // Open file
     FILE *fp = fopen(argv[1], "r");
-    if(fp == NULL){
+    if(fp == NULL)
+    {
         printf("Null file.\n");
         return 1;
     }
 
+    //prepare str var to grab 1 line at a time
     char result[100];
     int commandNum = 0;
     struct timespec start, finish;
 
     //new line is recorded from text file
-    while (fgets(result, 100, fp)){
+    while (fgets(result, 100, fp))
+    {
         commandNum++;
-        //printf("result: _%s_\n", result);
-        //fflush(stdout);
-        //fflush(stderr);
-
+        //start time
         clock_gettime(CLOCK_MONOTONIC, &start);
         int pid = fork();
 
-
         if(pid == 0)
         {
+            //child go into helper function
             doExecvp(result, commandNum, 0);
             exit(0);
 
         }
         else if(pid > 0) //parent process
         {
-            //store process data in hash
+            //store process data in hashtable
             struct nlist* myNode = insert(result, pid, commandNum);
             myNode->start = start;
         } else {
@@ -291,6 +291,7 @@ int main(int argc, const char * argv[])
     int wpid;
 
     int status;
+    //myNode1 is tmpnode for lookUp return from hashtabl
     struct nlist* myNode1;
     double elapsed;
 
@@ -298,10 +299,15 @@ int main(int argc, const char * argv[])
 
     while( (wpid = wait(&status)) > 0)
     {
+        //store the finish time!
+        clock_gettime(CLOCK_MONOTONIC, &finish);
+
         fflush(stdout);
         fflush(stderr);
+
+        //lookup pid in hashtable
         myNode1 = lookup(wpid);
-        clock_gettime(CLOCK_MONOTONIC, &finish);
+
         if(myNode1 != NULL)
         {
             myNode1->finish = finish;
@@ -315,14 +321,11 @@ int main(int argc, const char * argv[])
 //                   myNode1->pid, myNode1->index, myNode1->command, elapsed);
 
         }
-        else {
+        else
+        {
             printf("myNode1 = NULL!\n");
         }
-
-
-        //fflush(stdout);
-        //fflush(stderr);
-
+        //prepare to print in .out file for <pid#>
         char outFileName[20];
         sprintf(outFileName, "%d.out", wpid);
         FILE * outFP = fopen(outFileName, "a+b");
@@ -330,29 +333,32 @@ int main(int argc, const char * argv[])
         {
             return 2;
         }
-        fprintf(outFP, "Finished child %i pid of parent %i\n", wpid, getpid());
-        fprintf(outFP, "Finished at %ld, runtime duration %.5f", myNode1->finish.tv_nsec, elapsed);
-        //make name of the file
-        char pidArrforError[10];
 
+        fprintf(outFP, "Finished child %i pid of parent %i\n", wpid, getpid());
+        fprintf(outFP, "Finished at %ld, runtime duration %.5f", myNode1->finish.tv_sec, elapsed);
+
+        //prepare to print in .err file for <pid#>
+        char pidArrforError[10];
         //convert int pid to string
         sprintf(pidArrforError, "%d.err", wpid);
-
         int f_err = open(pidArrforError, O_RDWR | O_CREAT | O_APPEND,0777);
 
         dup2(f_err, fileno(stderr));
 
         //Normal termination with exit code        
-        if(WIFEXITED(status)){
+        if(WIFEXITED(status))
+        {
             fprintf(stderr, "Exited with exitcode = %d\n", WEXITSTATUS(status));
+            //print message if less than 2 seconds
             if(elapsed <= 2) {
                 fprintf(stderr, "spawning too fast");
             }
         }
 
-            //Abnormal Termination with exit signal
-        else if(WIFSIGNALED(status)){
+        else if(WIFSIGNALED(status)) //Abnormal Termination with exit signal
+        {
             fprintf(stderr, "Killed with signal = %d\n", WTERMSIG(status));
+            //print message if less than 2 seconds
             if(elapsed <= 2) {
                 fprintf(stderr, "spawning too fast");
             }
@@ -361,7 +367,8 @@ int main(int argc, const char * argv[])
         close(f_err);
 
         //decide if you will restart
-        if (elapsed > 2) {
+        if (elapsed > 2)
+        {
             //save the startime!
             clock_gettime(CLOCK_MONOTONIC, &start);
             int pid = fork();
@@ -373,19 +380,20 @@ int main(int argc, const char * argv[])
             }
             if (pid == 0) //child
             {
-            // See shell1_execvp.c for execvp usage
+                //flag for print restart at top of the file
                 doExecvp(myNode1->command, myNode1->index, 1);
-            } else if (pid > 0)
+            }
+            else if (pid > 0)
             {
                 struct nlist* myNode2 = insert(myNode1->command, pid, myNode1->index);
                 myNode2->start = start;
             }
-            else {
+            else
+            {
                 printf("Error in forking.\n");
                 exit(1);
             }
         }
     }
-
     return 0;
 }
