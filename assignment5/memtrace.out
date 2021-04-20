@@ -1,0 +1,409 @@
+malloc TRACE_TOP: with global sizeof: 24
+File mem_tracer.c, line 170, function global allocated new memory segment at address 0x1008255c0 to size 24
+mallocing memory for string _global_
+File mem_tracer.c, line 91, function (null) allocated new memory segment at address 0x100825620 to size 7
+malloc another link for TRACE_TOP with string: make_extend_array: sizeof: 24
+File mem_tracer.c, line 189, function global allocated new memory segment at address 0x100825670 to size 24
+mallocing memory for string _make_extend_array_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x1008256d0 to size 18
+malloc initial array in createArray: 80
+File mem_tracer.c, line 286, function make_extend_array:global allocated new memory segment at address 0x100825730 to size 80
+malloc array[0]: sleep 1
+: 8
+File mem_tracer.c, line 313, function make_extend_array:global allocated new memory segment at address 0x100826850 to size 8
+
+malloc array[1]: ls -latr
+: 9
+File mem_tracer.c, line 313, function make_extend_array:global allocated new memory segment at address 0x1008268a0 to size 9
+
+malloc array[2]: sleep 1
+: 8
+File mem_tracer.c, line 313, function make_extend_array:global allocated new memory segment at address 0x1008268f0 to size 8
+
+malloc array[3]: pwd
+: 4
+File mem_tracer.c, line 313, function make_extend_array:global allocated new memory segment at address 0x100826940 to size 4
+
+malloc array[4]: sleep 5
+: 8
+File mem_tracer.c, line 313, function make_extend_array:global allocated new memory segment at address 0x100826990 to size 8
+
+malloc last array[5]: wc /etc/passwd: 14
+File mem_tracer.c, line 321, function make_extend_array:global allocated new memory segment at address 0x1008269e0 to size 15
+HERE
+
+malloc another link for TRACE_TOP with string: reallocating for best fit: sizeof: 24
+File mem_tracer.c, line 189, function make_extend_array:global allocated new memory segment at address 0x100826a30 to size 24
+mallocing memory for string _reallocating for best fit_
+File mem_tracer.c, line 91, function make_extend_array:global allocated new memory segment at address 0x100826a90 to size 26
+reallocating for perfect space: 48
+File mem_tracer.c, line 268, function reallocating for best fit:make_extend_array:global reallocated the memory segment at address 0x100826af0 to a new size 48
+freeing tnode->command = _reallocating for best fit_ and tnode itself
+File mem_tracer.c, line 214, function make_extend_array:global deallocated the memory segment at address 0x100826a90
+File mem_tracer.c, line 215, function make_extend_array:global deallocated the memory segment at address 0x100826a30
+freeing tnode->command = _make_extend_array_ and tnode itself
+File mem_tracer.c, line 214, function global deallocated the memory segment at address 0x1008256d0
+File mem_tracer.c, line 215, function global deallocated the memory segment at address 0x100825670
+File mem_tracer.c, line 104, function global allocated new memory segment at address 0x100826b60 to size 24
+mallocing memory for string _sleep 1_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826bc0 to size 8
+File mem_tracer.c, line 117, function global allocated new memory segment at address 0x100826c10 to size 24
+mallocing memory for string _ls -latr_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826c70 to size 9
+File mem_tracer.c, line 117, function global allocated new memory segment at address 0x100826cc0 to size 24
+mallocing memory for string _sleep 1_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826d20 to size 8
+File mem_tracer.c, line 117, function global allocated new memory segment at address 0x100826d70 to size 24
+mallocing memory for string _pwd_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826dd0 to size 4
+File mem_tracer.c, line 117, function global allocated new memory segment at address 0x100826e20 to size 24
+mallocing memory for string _sleep 5_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826e80 to size 8
+File mem_tracer.c, line 117, function global allocated new memory segment at address 0x100826ed0 to size 24
+mallocing memory for string _wc /etc/passwd_
+File mem_tracer.c, line 91, function global allocated new memory segment at address 0x100826f30 to size 15
+Head of list(vvv)
+Printing Node: pos 1
+index = 1
+command = _sleep 1_
+Printing Node: pos 2
+index = 2
+command = _ls -latr_
+Printing Node: pos 3
+index = 3
+command = _sleep 1_
+Printing Node: pos 4
+index = 4
+command = _pwd_
+Printing Node: pos 5
+index = 5
+command = _sleep 5_
+Printing Node: pos 6
+index = 6
+command = _wc /etc/passwd_
+tail of List (^^^)
+freeing linkedList head->command: _sleep 1_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826bc0
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826b60
+freeing linkedList head->command: _ls -latr_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826c70
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826c10
+freeing linkedList head->command: _sleep 1_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826d20
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826cc0
+freeing linkedList head->command: _pwd_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826dd0
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826d70
+freeing linkedList head->command: _sleep 5_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826e80
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826e20
+freeing linkedList head->command: _wc /etc/passwd_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100826f30
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x100826ed0
+head == NULL
+freeing strs[0]: = _sleep 1_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x100826850
+freeing strs[1]: = _ls -latr_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x1008268a0
+freeing strs[2]: = _sleep 1_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x1008268f0
+freeing strs[3]: = _pwd_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x100826940
+freeing strs[4]: = _sleep 5_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x100826990
+freeing strs[5]: = _wc /etc/passwd_: size of: 8
+File mem_tracer.c, line 396, function global deallocated the memory segment at address 0x1008269e0
+freeing array
+File mem_tracer.c, line 400, function global deallocated the memory segment at address 0x100826af0
+freeing linkedList head->command: _global_ and current head
+File mem_tracer.c, line 230, function global deallocated the memory segment at address 0x100825620
+File mem_tracer.c, line 231, function global deallocated the memory segment at address 0x1008255c0
+head == NULL
+File mem_tracer_gh.c, line 250, function allocate_array_mem:global allocated new memory segment at address 0x7ffce94058a0 to size 80
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce94058f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405910 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405930 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405950 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405970 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405990 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce94059b0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce94059d0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce94059f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x7ffce9405a10 to size 20
+File mem_tracer_gh.c, line 288, function global allocated new memory segment at address 0x7ffce9405a30 to size 24
+File mem_tracer_gh.c, line 289, function global deallocated the memory segment at address 0x7ffce9405a30
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405a30 to size 24
+Index: 0	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405a50 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405a70 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405a90 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405ab0 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x7ffce9405ad0 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+Index: 5	Command: wc /etc/passwd
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce94058f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405910
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405930
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405950
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405970
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405990
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce94059b0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce94059d0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce94059f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x7ffce9405a10
+File mem_tracer_gh.c, line 336, function global deallocated the memory segment at address 0x7ffce94058a0
+File mem_tracer_gh.c, line 342, function global deallocated the memory segment at address 0x7ffce9405890
+File mem_tracer_gh.c, line 250, function allocate_array_mem:global allocated new memory segment at address 0x100824620 to size 80
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008256f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825750 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008257b0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825810 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825870 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008258d0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825930 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825990 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008259f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825a50 to size 20
+File mem_tracer_gh.c, line 288, function global allocated new memory segment at address 0x100825ab0 to size 24
+File mem_tracer_gh.c, line 289, function global deallocated the memory segment at address 0x100825ab0
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826ba0 to size 24
+Index: 0	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c00 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c60 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826cc0 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d20 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d80 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+Index: 5	Command: wc /etc/passwd
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008256f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825750
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008257b0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825810
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825870
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008258d0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825930
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825990
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008259f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825a50
+File mem_tracer_gh.c, line 336, function global deallocated the memory segment at address 0x100824620
+File mem_tracer_gh.c, line 342, function global deallocated the memory segment at address 0x100826b50
+File mem_tracer_gh.c, line 250, function allocate_array_mem:global allocated new memory segment at address 0x100824620 to size 80
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008256f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825750 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008257b0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825810 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825870 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008258d0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825930 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825990 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008259f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825a50 to size 20
+File mem_tracer_gh.c, line 288, function global allocated new memory segment at address 0x100825ab0 to size 24
+File mem_tracer_gh.c, line 289, function global deallocated the memory segment at address 0x100825ab0
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826ba0 to size 24
+Index: 0	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c00 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c60 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826cc0 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d20 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d80 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+Index: 5	Command: wc /etc/passwd
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008256f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825750
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008257b0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825810
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825870
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008258d0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825930
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825990
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008259f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825a50
+File mem_tracer_gh.c, line 336, function global deallocated the memory segment at address 0x100824620
+File mem_tracer_gh.c, line 342, function global deallocated the memory segment at address 0x100826b50
+File mem_tracer_gh.c, line 250, function allocate_array_mem:global allocated new memory segment at address 0x100824620 to size 80
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008256f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825750 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008257b0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825810 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825870 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008258d0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825930 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825990 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x1008259f0 to size 20
+File mem_tracer_gh.c, line 254, function allocate_array_mem:global allocated new memory segment at address 0x100825a50 to size 20
+File mem_tracer_gh.c, line 288, function global allocated new memory segment at address 0x100825ab0 to size 24
+File mem_tracer_gh.c, line 289, function global deallocated the memory segment at address 0x100825ab0
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826ba0 to size 24
+Index: 0	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c00 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826c60 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826cc0 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d20 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+File mem_tracer_gh.c, line 319, function global allocated new memory segment at address 0x100826d80 to size 24
+Index: 0	Command: sleep 1
+
+Index: 1	Command: ls -latr
+
+Index: 2	Command: sleep 1
+
+Index: 3	Command: pwd
+
+Index: 4	Command: sleep 5
+
+Index: 5	Command: wc /etc/passwd
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008256f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825750
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008257b0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825810
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825870
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008258d0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825930
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825990
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x1008259f0
+File mem_tracer_gh.c, line 335, function global deallocated the memory segment at address 0x100825a50
+File mem_tracer_gh.c, line 336, function global deallocated the memory segment at address 0x100824620
+File mem_tracer_gh.c, line 342, function global deallocated the memory segment at address 0x100826b50

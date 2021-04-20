@@ -1,0 +1,6 @@
+sleep 1
+ls -latr
+sleep 1
+pwd
+sleep 5
+wc /etc/passwd
